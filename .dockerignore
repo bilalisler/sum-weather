@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.*
+.idea
+.vscode
+.claude
+.wwebjs_auth
+.wwebjs_cache
+*.md
+Dockerfile
+.dockerignore
