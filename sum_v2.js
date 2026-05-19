@@ -401,3 +401,10 @@ cron.schedule(GONDERIM_SAATI, () => {
 });
 client.initialize()
 
+
+// railway variables --set "TELEFON_NUMARASI=905319161340" \
+//                     --set "SEHIR=bursa" \
+//                     --set "GONDERIM_SAATI=30 07 * * *" \
+//                     --set "HEDEF_TARIH=2026-06-06" \
+//                     --set "TIMEZONE=Europe/Istanbul"
+

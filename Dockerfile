@@ -17,6 +17,4 @@ COPY . .
 RUN mkdir -p /data/.wwebjs_auth && chown -R pptruser:pptruser /data /app
 USER pptruser
 
-VOLUME ["/data"]
-
 CMD ["node", "sum.js"]
