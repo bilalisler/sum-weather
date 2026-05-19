@@ -1,16 +1,22 @@
 FROM ghcr.io/puppeteer/puppeteer:21.5.0
 
-# Root yetkisiyle çalışma alanını oluşturuyoruz
 USER root
 
 WORKDIR /app
 
-# Bağımlılıkları kopyala ve kur
-COPY package*.json ./
-RUN npm ci
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+    SESSION_PATH=/data/.wwebjs_auth \
+    NODE_ENV=production
 
-# Uygulama kodlarını kopyala
+COPY package*.json ./
+RUN npm ci --omit=dev
+
 COPY . .
 
-# Uygulamayı başlat
-CMD ["node", "index"]
+RUN mkdir -p /data/.wwebjs_auth && chown -R pptruser:pptruser /data /app
+USER pptruser
+
+VOLUME ["/data"]
+
+CMD ["node", "sum.js"]

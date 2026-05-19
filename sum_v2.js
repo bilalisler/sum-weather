@@ -3,37 +3,16 @@ const qrcode = require('qrcode-terminal');
 const cron = require('node-cron');
 const axios = require('axios');
 
-const SEHIR = process.env.SEHIR || 'istanbul';
-const TELEFON_NUMARASI = process.env.TELEFON_NUMARASI;
-const GONDERIM_SAATI = process.env.GONDERIM_SAATI || '30 07 * * *';
-const HEDEF_TARIH = process.env.HEDEF_TARIH || '2026-06-06';
-const TIMEZONE = process.env.TIMEZONE || 'Europe/Istanbul';
-const SESSION_PATH = process.env.SESSION_PATH || './.wwebjs_auth';
-
-const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH
-    || (process.platform === 'darwin'
-        ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-        : '/usr/bin/google-chrome-stable');
-
-if (!TELEFON_NUMARASI) {
-    console.error('❌ TELEFON_NUMARASI ortam değişkeni tanımlı değil. Çıkılıyor.');
-    process.exit(1);
-}
+const SEHIR = 'istanbul';
+const TELEFON_NUMARASI = '905387672037';
+//const GONDERIM_SAATI = '30 07 * * *';
+const GONDERIM_SAATI = '* * * * *';
+const HEDEF_TARIH = '2026-06-06';
 
 const client = new Client({
-    authStrategy: new LocalAuth({dataPath: SESSION_PATH}),
+    authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: CHROME_PATH,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
-        ]
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
 
@@ -42,27 +21,9 @@ client.on('qr', (qr) => {
     qrcode.generate(qr, {small: true});
 });
 
-client.on('authenticated', () => {
-    console.log('🔐 Kimlik doğrulandı, oturum kaydedildi.');
-});
-
-client.on('auth_failure', (msg) => {
-    console.error('❌ Kimlik doğrulama hatası:', msg);
-});
-
-client.on('disconnected', (reason) => {
-    console.warn('⚠️ Bağlantı koptu:', reason);
-});
-
 client.on('ready', () => {
     console.log('✅ WhatsApp Asistanı Hazır ve Arka Planda Çalışıyor!');
-    console.log(`⏰ Cron: "${GONDERIM_SAATI}" (${TIMEZONE}) — şehir: ${SEHIR.toUpperCase()}`);
-});
-
-process.on('SIGTERM', async () => {
-    console.log('🛑 SIGTERM alındı, kapatılıyor...');
-    try { await client.destroy(); } catch (e) {}
-    process.exit(0);
+    console.log(`⏰ Her sabah saat 07:30'da ${SEHIR.toUpperCase()} için kombin önerisi gönderilecek.`);
 });
 
 const evlilikMesajlari = [
@@ -437,6 +398,6 @@ async function kombinGonder() {
 cron.schedule(GONDERIM_SAATI, () => {
     console.log('⏰ Zamanı geldi, hava durumu kontrol ediliyor...');
     kombinGonder();
-}, {timezone: TIMEZONE});
+});
 client.initialize()
 
